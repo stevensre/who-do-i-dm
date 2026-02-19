@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SRE - Who Do I DM?">
+<title>SRE — Who Do I DM?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #111111;
+    --gold: #C5A55A;
+    --gold-dim: rgba(197,165,90,0.12);
+    --gold-border: rgba(197,165,90,0.25);
+    --dark: #1A1A1A;
+    --card: #1E1E1E;
+    --card-hover: #252525;
+    --text: #F0EDE6;
+    --text-dim: rgba(240,237,230,0.45);
+    --text-mid: rgba(240,237,230,0.7);
+    --red: #E74C3C;
+    --red-dim: rgba(231,76,60,0.10);
+    --blue: #3498db;
+    --blue-dim: rgba(52,152,219,0.10);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--black);
+    color: var(--text);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    min-height: 100dvh;
+    padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+  }
+
+  /* ===== MAIN VIEW ===== */
+  .main-view {
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+    padding: 14px 14px 12px;
+    gap: 8px;
+  }
+
+  /* Header */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2px 4px;
+  }
+
+  .brand { display: flex; align-items: center; }
+
+  .brand-logo { height: 28px; width: auto; }
+
+  .header-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gold);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* ===== WORKFLOW STEPS ===== */
+  .workflow-step {
+    background: var(--card);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .workflow-step:active { background: var(--card-hover); }
+
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+  }
+
+  .step-num {
+    width: 22px; height: 22px;
+    background: var(--gold);
+    color: var(--black);
+    font-weight: 800; font-size: 12px;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .step-label {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  .step-label-sub {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--text-mid);
+  }
+
+  .step-chevron {
+    font-size: 14px;
+    color: var(--text-dim);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+
+  .step-chevron.open { transform: rotate(90deg); }
+
+  .step-body {
+    display: none;
+    padding: 0 14px 12px;
+  }
+
+  .step-body.show { display: block; }
+
+  .step-links {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .step-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 8px;
+    padding: 10px 12px;
+    text-decoration: none;
+    color: var(--text);
+    transition: background 0.15s;
+  }
+
+  .step-link:active { background: rgba(255,255,255,0.08); }
+
+  .step-link-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+    width: 24px;
+    text-align: center;
+  }
+
+  .step-link-text {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  .step-link-arrow {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  /* 1-3-1 inline */
+  .step-131 {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .step-131-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .step-131-num {
+    width: 22px; height: 22px;
+    background: var(--gold);
+    color: var(--black);
+    font-weight: 800; font-size: 12px;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .step-131-text {
+    font-size: 12.5px;
+    color: var(--text);
+    line-height: 1.4;
+    padding-top: 2px;
+  }
+
+  .step-131-text strong { color: var(--gold); }
+
+  .step-131-footer {
+    font-size: 11px;
+    color: var(--text-mid);
+    padding-top: 4px;
+    font-style: italic;
+  }
+
+  /* ===== SECTION DIVIDER ===== */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 2px 0;
+  }
+
+  .divider-line {
+    flex: 1;
+    height: 1px;
+    background: rgba(255,255,255,0.08);
+  }
+
+  .divider-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+
+  /* Urgency Banner */
+  .urgency-banner {
+    background: var(--red-dim);
+    border: 1px solid rgba(231,76,60,0.2);
+    border-radius: 10px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .urgency-banner:active { background: rgba(231,76,60,0.18); }
+  .urgency-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+
+  .urgency-text {
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(240,237,230,0.85);
+    line-height: 1.45;
+  }
+
+  .urgency-text strong { color: var(--text); font-weight: 700; }
+
+  .urgency-expand {
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-top: 4px;
+    display: block;
+  }
+
+  .urgency-details {
+    display: none;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(231,76,60,0.15);
+    font-size: 12px;
+    color: rgba(240,237,230,0.7);
+    line-height: 1.5;
+  }
+
+  .urgency-details.show { display: block; }
+
+  .urgency-details ul { list-style: none; padding: 0; margin: 4px 0 0; }
+
+  .urgency-details li { margin-bottom: 4px; }
+
+  .urgency-details li::before {
+    content: "•";
+    color: var(--red);
+    margin-right: 6px;
+    font-weight: 700;
+  }
+
+  /* Route Cards */
+  .routes {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .route-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--card);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 10px 14px;
+    text-decoration: none;
+    color: var(--text);
+    transition: all 0.15s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .route-card:active {
+    background: var(--card-hover);
+    transform: scale(0.985);
+  }
+
+  .route-card::after {
+    content: "";
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--gold);
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  .route-card:active::after { opacity: 1; }
+
+  .route-left {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  .route-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  .route-desc {
+    font-size: 10.5px;
+    font-weight: 400;
+    color: var(--text-mid);
+    line-height: 1.2;
+  }
+
+  .route-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .route-person {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--gold);
+    text-align: right;
+    line-height: 1.2;
+  }
+
+  .route-sub {
+    font-size: 10px;
+    font-weight: 400;
+    color: var(--text-dim);
+  }
+
+  .route-arrow {
+    font-size: 14px;
+    color: var(--text-dim);
+  }
+
+  /* Special card styles */
+  .route-card.escalation {
+    border-color: var(--gold-border);
+    background: var(--gold-dim);
+  }
+  .route-card.escalation .route-person { color: var(--gold); }
+
+  /* Footer */
+  .footer {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 2px 2px 0;
+  }
+
+  .see-all-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: var(--gold);
+    color: var(--black);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 13px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+
+  .see-all-btn:active { opacity: 0.85; transform: scale(0.985); }
+
+  .footer-note {
+    font-size: 10px;
+    color: var(--text-dim);
+    text-align: center;
+    line-height: 1.4;
+  }
+
+  /* ===== FULL TABLE VIEW ===== */
+  .table-view {
+    display: none;
+    flex-direction: column;
+    min-height: 100dvh;
+  }
+
+  .table-view.show { display: flex; }
+  .main-view.hide { display: none; }
+
+  .table-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--black);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .back-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    color: var(--gold);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 6px 0;
+    font-family: inherit;
+  }
+
+  .table-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 0.5px;
+  }
+
+  .table-content {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 0 0 env(safe-area-inset-bottom);
+  }
+
+  .table-section-header {
+    position: sticky;
+    top: 0;
+    background: var(--dark);
+    padding: 10px 16px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    border-bottom: 1px solid rgba(197,165,90,0.15);
+    z-index: 5;
+  }
+
+  .table-row {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    cursor: pointer;
+  }
+
+  .table-row:active { background: var(--card); }
+
+  .table-scenario {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.35;
+  }
+
+  .table-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .table-who {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gold);
+  }
+
+  .table-who.urgent-who { color: var(--red); }
+
+  .table-why {
+    font-size: 11px;
+    color: var(--text-dim);
+    text-align: right;
+    max-width: 55%;
+  }
+
+  /* Info sections in table view */
+  .info-section {
+    padding: 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .info-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+
+  .info-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .info-list li {
+    font-size: 13px;
+    color: var(--text-mid);
+    line-height: 1.5;
+    padding-left: 16px;
+    position: relative;
+    margin-bottom: 4px;
+  }
+
+  .info-list li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: var(--gold);
+    font-weight: 700;
+  }
+
+  .info-list.misroutes li::before { color: var(--red); }
+  .info-list.protects li::before { color: #2ecc71; }
+
+  .info-note {
+    font-size: 12px;
+    color: var(--text-mid);
+    margin-top: 10px;
+    font-weight: 600;
+  }
+
+  /* Search */
+  .search-bar {
+    padding: 8px 16px 4px;
+    position: sticky;
+    top: 0;
+    z-index: 8;
+    background: var(--black);
+  }
+
+  .search-input {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 11px 14px;
+    font-size: 14px;
+    color: var(--text);
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .search-input::placeholder { color: var(--text-dim); }
+  .search-input:focus { border-color: var(--gold-border); }
+
+  .no-results {
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 14px;
+  }
+
+  /* Desktop max-width */
+  @media (min-width: 500px) {
+    .main-view, .table-view { max-width: 430px; margin: 0 auto; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== MAIN VIEW ===== -->
+<div class="main-view" id="mainView">
+
+  <div class="header">
+    <div class="brand">
+      <img src="data:image/png;base64,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" alt="Stevens Real Estate | eXp Realty" class="brand-logo">
+    </div>
+    <div class="header-title">Who Do I DM?</div>
+  </div>
+
+  <!-- ===== STEP 1: SELF-SERVICE ===== -->
+  <div class="workflow-step" onclick="toggleStep('step1')">
+    <div class="step-header">
+      <div class="step-num">1</div>
+      <div class="step-label">Start here — check these first<br><span class="step-label-sub">Most answers are already available</span></div>
+      <span class="step-chevron" id="step1-chevron">›</span>
+    </div>
+    <div class="step-body" id="step1-body">
+      <div class="step-links">
+        <a class="step-link" href="https://www.impactproject.net/messages/bot/2001361859" target="_blank">
+          <span class="step-link-icon">🤖</span>
+          <span class="step-link-text">Ask the AI Agent</span>
+          <span class="step-link-arrow">↗</span>
+        </a>
+        <a class="step-link" href="https://www.impactproject.net/c/ceo-library/" target="_blank">
+          <span class="step-link-icon">📚</span>
+          <span class="step-link-text">Resource Library</span>
+          <span class="step-link-arrow">↗</span>
+        </a>
+        <a class="step-link" href="https://www.impactproject.net/c/feature-requests/" target="_blank">
+          <span class="step-link-icon">💡</span>
+          <span class="step-link-text">Submit an Idea or Improvement</span>
+          <span class="step-link-arrow">↗</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== STEP 2: 1-3-1 FRAMEWORK ===== -->
+  <div class="workflow-step" onclick="toggleStep('step2')">
+    <div class="step-header">
+      <div class="step-num">2</div>
+      <div class="step-label">Structure your message<br><span class="step-label-sub">Use the 1-3-1 framework before reaching out</span></div>
+      <span class="step-chevron" id="step2-chevron">›</span>
+    </div>
+    <div class="step-body" id="step2-body">
+      <div class="step-131">
+        <div class="step-131-item">
+          <div class="step-131-num">1</div>
+          <div class="step-131-text"><strong>Clear problem</strong> — define the root cause</div>
+        </div>
+        <div class="step-131-item">
+          <div class="step-131-num">3</div>
+          <div class="step-131-text"><strong>Possible solutions</strong> — propose options or alternatives</div>
+        </div>
+        <div class="step-131-item">
+          <div class="step-131-num">1</div>
+          <div class="step-131-text"><strong>Recommendation</strong> — pick the best one</div>
+        </div>
+        <div class="step-131-footer">This ensures productive conversations.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION DIVIDER ===== -->
+  <div class="section-divider">
+    <div class="divider-line"></div>
+    <div class="divider-label">Still need help? DM the right person</div>
+    <div class="divider-line"></div>
+  </div>
+
+  <!-- Urgency Banner -->
+  <div class="urgency-banner" onclick="toggleUrgency()">
+    <span class="urgency-icon">🚨</span>
+    <div>
+      <div class="urgency-text"><strong>Is this urgent?</strong> Only skip routing if a deadline is within 4hrs, there's legal/financial risk, or client safety is at stake.</div>
+      <span class="urgency-expand" id="urgencyExpand">Tap for details ↓</span>
+      <div class="urgency-details" id="urgencyDetails">
+        <ul>
+          <li><strong>Contract deadline within hours →</strong> TC immediately</li>
+          <li><strong>Compliance with legal risk →</strong> TC immediately</li>
+          <li><strong>Client safety / funds at risk →</strong> Call department leader</li>
+        </ul>
+        <div style="margin-top:8px;">For true emergencies, <strong>call or text</strong> — don't DM.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ROUTE CARDS ===== -->
+  <div class="routes">
+    <a class="route-card" href="https://www.impactproject.net/u/5a53f396" target="_blank">
+      <div class="route-left">
+        <div class="route-label">Process or access</div>
+        <div class="route-desc">Onboarding, systems, how SRE works</div>
+      </div>
+      <div class="route-right">
+        <div class="route-person">Ops<br><span class="route-sub">Max</span></div>
+        <span class="route-arrow">›</span>
+      </div>
+    </a>
+
+    <a class="route-card" href="#" onclick="return false;">
+      <div class="route-left">
+        <div class="route-label">Execution or skill</div>
+        <div class="route-desc">Live deals, showings, negotiation, role-play</div>
+      </div>
+      <div class="route-right">
+        <div class="route-person">Mentor</div>
+        <span class="route-arrow">›</span>
+      </div>
+    </a>
+
+    <a class="route-card" href="https://www.impactproject.net/u/1f273ab6" target="_blank">
+      <div class="route-left">
+        <div class="route-label">Transactions or listings</div>
+        <div class="route-desc">Accepted offers, deadlines, docs, MLS</div>
+      </div>
+      <div class="route-right">
+        <div class="route-person">TC<br><span class="route-sub">Amaris</span></div>
+        <span class="route-arrow">›</span>
+      </div>
+    </a>
+
+    <a class="route-card" href="https://www.impactproject.net/u/194ea0ee" target="_blank">
+      <div class="route-left">
+        <div class="route-label">Brand or marketing assets</div>
+        <div class="route-desc">Templates, flyers, listing graphics, brand usage</div>
+      </div>
+      <div class="route-right">
+        <div class="route-person">Marketing Asst<br><span class="route-sub">Kenneth</span></div>
+        <span class="route-arrow">›</span>
+      </div>
+    </a>
+
+    <a class="route-card" href="https://www.impactproject.net/u/5a53f396" target="_blank">
+      <div class="route-left">
+        <div class="route-label">Strategy, events, or custom marketing</div>
+        <div class="route-desc">Campaigns, headshots, events, social standards</div>
+      </div>
+      <div class="route-right">
+        <div class="route-person">M&E Mgr<br><span class="route-sub">Max (interim)</span></div>
+        <span class="route-arrow">›</span>
+      </div>
+    </a>
+
+    <a class="route-card" href="https://www.impactproject.net/u/e9907bba" target="_blank">
+      <div class="route-left">
+        <div class="route-label">Commissions or payments</div>
+        <div class="route-desc">Payouts, splits, sponsorships, expenses</div>
+      </div>
+      <div class="route-right">
+        <div class="route-person">Finance & Office Mgr<br><span class="route-sub">Beth</span></div>
+        <span class="route-arrow">›</span>
+      </div>
+    </a>
+
+    <a class="route-card" href="#" onclick="return false;">
+      <div class="route-left">
+        <div class="route-label">Zillow</div>
+        <div class="route-desc">Certification, eligibility, performance, leads</div>
+      </div>
+      <div class="route-right">
+        <div class="route-person">Zillow Success Mgr<br><span class="route-sub">Jason</span></div>
+        <span class="route-arrow">›</span>
+      </div>
+    </a>
+
+    <a class="route-card" href="https://www.impactproject.net/u/90022f38" target="_blank">
+      <div class="route-left">
+        <div class="route-label">Production, goals, or coaching</div>
+        <div class="route-desc">Performance, training, PIPs, vendor referrals</div>
+      </div>
+      <div class="route-right">
+        <div class="route-person">Head of AP<br><span class="route-sub">Zack (interim)</span></div>
+        <span class="route-arrow">›</span>
+      </div>
+    </a>
+
+    <a class="route-card escalation" href="#" onclick="toggleStep('step2'); return false;">
+      <div class="route-left">
+        <div class="route-label">Raise a concern or suggestion</div>
+        <div class="route-desc">Policy questions, feedback, improvement ideas</div>
+      </div>
+      <div class="route-right">
+        <div class="route-person">1-3-1 first<br><span class="route-sub">then Ops</span></div>
+        <span class="route-arrow">›</span>
+      </div>
+    </a>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <button class="see-all-btn" onclick="showTable()">See All Scenarios & Details →</button>
+    <div class="footer-note">DMing Leadership without following routing will result in being redirected. When in doubt — DM Ops, who will assist in routing you to the correct person.</div>
+  </div>
+
+</div>
+
+<!-- ===== FULL TABLE VIEW ===== -->
+<div class="table-view" id="tableView">
+  <div class="table-header">
+    <button class="back-btn" onclick="hideTable()">← Back</button>
+    <div class="table-title">All Scenarios & Guidelines</div>
+  </div>
+
+  <div class="search-bar">
+    <input type="text" class="search-input" id="searchInput" placeholder="Search scenarios..." oninput="filterTable()" autocomplete="off">
+  </div>
+
+  <div class="table-content" id="tableContent">
+
+    <!-- ONBOARDING & SYSTEMS -->
+    <div class="table-section" data-section="onboarding">
+      <div class="table-section-header">Onboarding & Systems</div>
+      <div class="table-row" data-search="onboarding tasks start">
+        <div class="table-scenario">I don't know where to start with onboarding tasks</div>
+        <div class="table-meta"><span class="table-who">Ops</span><span class="table-why">Onboarding flow, access, and setup</span></div>
+      </div>
+      <div class="table-row" data-search="system access circle fub sisu clickup email">
+        <div class="table-scenario">I can't access a system (Circle, FUB, SISU, ClickUp, email, etc.)</div>
+        <div class="table-meta"><span class="table-who">Ops</span><span class="table-why">Systems access and troubleshooting</span></div>
+      </div>
+      <div class="table-row" data-search="confused how sre works process">
+        <div class="table-scenario">I'm confused about how SRE does something</div>
+        <div class="table-meta"><span class="table-who">Ops</span><span class="table-why">Process and workflow clarity</span></div>
+      </div>
+      <div class="table-row" data-search="update bio headshot website profile">
+        <div class="table-scenario">I need to update my bio, headshot, or website profile</div>
+        <div class="table-meta"><span class="table-who">Ops</span><span class="table-why">Profile updates route through operations</span></div>
+      </div>
+      <div class="table-row" data-search="dont know who ask">
+        <div class="table-scenario">I don't know who to ask</div>
+        <div class="table-meta"><span class="table-who">Ops</span><span class="table-why">Default starting point and internal triage</span></div>
+      </div>
+    </div>
+
+    <!-- DEALS & FIELD EXECUTION -->
+    <div class="table-section" data-section="deals">
+      <div class="table-section-header">Deals & Field Execution</div>
+      <div class="table-row" data-search="buyer question showing">
+        <div class="table-scenario">I have a buyer question mid-showing</div>
+        <div class="table-meta"><span class="table-who">Mentor</span><span class="table-why">In-the-field execution support</span></div>
+      </div>
+      <div class="table-row" data-search="structure offer">
+        <div class="table-scenario">I'm unsure how to structure an offer</div>
+        <div class="table-meta"><span class="table-who">Mentor</span><span class="table-why">Offer strategy and negotiation tactics</span></div>
+      </div>
+      <div class="table-row" data-search="negotiation counteroffer difficult">
+        <div class="table-scenario">I need help with a difficult negotiation or counteroffer</div>
+        <div class="table-meta"><span class="table-who">Mentor</span><span class="table-why">Tactical deal guidance</span></div>
+      </div>
+      <div class="table-row" data-search="feedback client conversation">
+        <div class="table-scenario">I want feedback on a client conversation</div>
+        <div class="table-meta"><span class="table-who">Mentor</span><span class="table-why">Skill development and coaching</span></div>
+      </div>
+      <div class="table-row" data-search="shadow role-play roleplay practice">
+        <div class="table-scenario">I need to shadow or role-play</div>
+        <div class="table-meta"><span class="table-who">Mentor</span><span class="table-why">Structured execution support</span></div>
+      </div>
+    </div>
+
+    <!-- TRANSACTIONS & COMPLIANCE -->
+    <div class="table-section" data-section="transactions">
+      <div class="table-section-header">Transactions & Compliance</div>
+      <div class="table-row" data-search="offer accepted next steps">
+        <div class="table-scenario">An offer was accepted — what are my next steps?</div>
+        <div class="table-meta"><span class="table-who">TC</span><span class="table-why">Contract-to-close ownership</span></div>
+      </div>
+      <div class="table-row" data-search="deadline active deal">
+        <div class="table-scenario">I have a deadline question on an active deal</div>
+        <div class="table-meta"><span class="table-who">TC</span><span class="table-why">Deadline and closing calendar management</span></div>
+      </div>
+      <div class="table-row" data-search="missing document file">
+        <div class="table-scenario">I'm missing a document for a file</div>
+        <div class="table-meta"><span class="table-who">TC</span><span class="table-why">Document collection and compliance</span></div>
+      </div>
+      <div class="table-row" data-search="compliance legal financial risk urgent">
+        <div class="table-scenario">A compliance issue creates legal or financial risk</div>
+        <div class="table-meta"><span class="table-who urgent-who">TC immediately</span><span class="table-why">TC owns compliance escalation; routes to leadership as needed</span></div>
+      </div>
+      <div class="table-row" data-search="contract deadline hours urgent">
+        <div class="table-scenario">A contract deadline is within hours</div>
+        <div class="table-meta"><span class="table-who urgent-who">TC immediately</span><span class="table-why">Time-sensitive; TC owns deadlines</span></div>
+      </div>
+    </div>
+
+    <!-- COMMISSIONS & FINANCE -->
+    <div class="table-section" data-section="finance">
+      <div class="table-section-header">Commissions & Finance</div>
+      <div class="table-row" data-search="commission payout split payment">
+        <div class="table-scenario">I have a commission, payout, or split question</div>
+        <div class="table-meta"><span class="table-who">Finance &amp; Office Mgr</span><span class="table-why">Standardized and handled centrally</span></div>
+      </div>
+      <div class="table-row" data-search="commission plan split structure">
+        <div class="table-scenario">I have a question about my commission plan or split structure</div>
+        <div class="table-meta"><span class="table-who">Finance &amp; Office Mgr</span><span class="table-why">Commission plan inquiries are finance-owned</span></div>
+      </div>
+      <div class="table-row" data-search="sponsorship partnership">
+        <div class="table-scenario">I want to submit or ask about a sponsorship or partnership</div>
+        <div class="table-meta"><span class="table-who">Finance &amp; Office Mgr + CEO</span><span class="table-why">Per brand guidelines, submitted to Bruce and Beth</span></div>
+      </div>
+    </div>
+
+    <!-- MARKETING & BRAND -->
+    <div class="table-section" data-section="marketing">
+      <div class="table-section-header">Marketing & Brand</div>
+      <div class="table-row" data-search="marketing template brand usage">
+        <div class="table-scenario">I need a marketing template or have a brand usage question</div>
+        <div class="table-meta"><span class="table-who">Marketing Assistant</span><span class="table-why">Brand compliance and asset use</span></div>
+      </div>
+      <div class="table-row" data-search="listing flyer just listed sold graphic open house">
+        <div class="table-scenario">I need a listing flyer, just listed/sold graphic, or open house assets</div>
+        <div class="table-meta"><span class="table-who">Marketing Assistant</span><span class="table-why">Standard asset creation and listing marketing</span></div>
+      </div>
+      <div class="table-row" data-search="social media posting standards">
+        <div class="table-scenario">I want to understand social media posting standards</div>
+        <div class="table-meta"><span class="table-who">Marketing &amp; Event Mgr</span><span class="table-why">Strategy and standards owned by M&amp;E Manager</span></div>
+      </div>
+      <div class="table-row" data-search="headshot photo updated">
+        <div class="table-scenario">I need a headshot or updated photo</div>
+        <div class="table-meta"><span class="table-who">Marketing &amp; Event Mgr</span><span class="table-why">Headshot coordination is a marketing function</span></div>
+      </div>
+      <div class="table-row" data-search="event client community host">
+        <div class="table-scenario">I want to host or request a client or community event</div>
+        <div class="table-meta"><span class="table-who">Marketing &amp; Event Mgr</span><span class="table-why">Events planned and executed through marketing</span></div>
+      </div>
+      <div class="table-row" data-search="custom marketing piece">
+        <div class="table-scenario">I need a custom marketing piece (not a standard template)</div>
+        <div class="table-meta"><span class="table-who">Marketing &amp; Event Mgr</span><span class="table-why">Custom requests route to strategy, not execution</span></div>
+      </div>
+    </div>
+
+    <!-- LEADS & PRODUCTION -->
+    <div class="table-section" data-section="leads">
+      <div class="table-section-header">Leads & Production</div>
+      <div class="table-row" data-search="non-zillow lead routed paused">
+        <div class="table-scenario">I'm unsure how a non-Zillow lead was routed or paused</div>
+        <div class="table-meta"><span class="table-who">Head of Agent Performance</span><span class="table-why">Lead routing and CRM standards</span></div>
+      </div>
+      <div class="table-row" data-search="zillow leads more earn">
+        <div class="table-scenario">I want to earn more Zillow leads</div>
+        <div class="table-meta"><span class="table-who">Zillow Success Manager</span><span class="table-why">Access is earned, not requested</span></div>
+      </div>
+      <div class="table-row" data-search="zillow standards eligibility routing performance certification">
+        <div class="table-scenario">Zillow standards, eligibility, routing, or performance</div>
+        <div class="table-meta"><span class="table-who">Zillow Success Manager</span><span class="table-why">Zillow standards and eligibility</span></div>
+      </div>
+      <div class="table-row" data-search="production goals set review">
+        <div class="table-scenario">I want to set or review my production goals</div>
+        <div class="table-meta"><span class="table-who">Head of Agent Performance</span><span class="table-why">Goal-setting and ramp plans</span></div>
+      </div>
+      <div class="table-row" data-search="continuing education training resources">
+        <div class="table-scenario">I need continuing education or training resources</div>
+        <div class="table-meta"><span class="table-who">Head of Agent Performance</span><span class="table-why">Education and training programs</span></div>
+      </div>
+      <div class="table-row" data-search="client unhappy complaint">
+        <div class="table-scenario">A client is unhappy or I have a client complaint</div>
+        <div class="table-meta"><span class="table-who">Head of Agent Performance</span><span class="table-why">Client experience coaching and escalation</span></div>
+      </div>
+      <div class="table-row" data-search="refer agent join team recruit">
+        <div class="table-scenario">I want to refer an agent to join the team</div>
+        <div class="table-meta"><span class="table-who">Head of Agent Performance</span><span class="table-why">Recruiting and onboarding oversight</span></div>
+      </div>
+      <div class="table-row" data-search="vendor referral inspector attorney lender">
+        <div class="table-scenario">I need a vendor referral (inspector, attorney, lender)</div>
+        <div class="table-meta"><span class="table-who">Head of Agent Performance</span><span class="table-why">Vendor partnership execution</span></div>
+      </div>
+      <div class="table-row" data-search="performance improvement plan pip">
+        <div class="table-scenario">I'm on a performance improvement plan and have a question</div>
+        <div class="table-meta"><span class="table-who">Head of Agent Performance</span><span class="table-why">Performance improvement plan ownership</span></div>
+      </div>
+    </div>
+
+    <!-- ESCALATION & INTERPERSONAL -->
+    <div class="table-section" data-section="escalation">
+      <div class="table-section-header">Escalation & Interpersonal</div>
+      <div class="table-row" data-search="disagree policy standard">
+        <div class="table-scenario">I disagree with a policy or standard</div>
+        <div class="table-meta"><span class="table-who">1-3-1 first, then Ops</span><span class="table-why">Follow escalation path</span></div>
+      </div>
+      <div class="table-row" data-search="unfair believe something">
+        <div class="table-scenario">I believe something is unfair</div>
+        <div class="table-meta"><span class="table-who">1-3-1 first, then Ops</span><span class="table-why">Structure your concern, then escalate</span></div>
+      </div>
+      <div class="table-row" data-search="concern agent behavior professionalism">
+        <div class="table-scenario">I have a concern about another agent's behavior</div>
+        <div class="table-meta"><span class="table-who">1-3-1 first, then Ops</span><span class="table-why">Define the problem and proposed solution first</span></div>
+      </div>
+      <div class="table-row" data-search="idea improve team culture">
+        <div class="table-scenario">I have an idea to improve the team or culture</div>
+        <div class="table-meta"><span class="table-who">Ideas &amp; Improvements Form</span><span class="table-why">Routes to Agent Advisory Council</span></div>
+      </div>
+    </div>
+
+    <!-- RESPONSE TIMES -->
+    <div class="info-section" data-section="info-response">
+      <div class="info-title">⏱ Response Time Expectations</div>
+      <ul class="info-list">
+        <li>Ops, TC, Marketing, Zillow Success Manager, and Mentors respond within <strong>business hours</strong></li>
+        <li>Slack is <strong>not</strong> an emergency channel</li>
+        <li>For true emergencies: <strong>call or text</strong> the designated department leader directly</li>
+      </ul>
+      <div class="info-note">Urgent items should clearly state: what is urgent, why it meets urgency criteria, and what deadline is at risk.</div>
+    </div>
+
+    <!-- COMMON MISROUTES -->
+    <div class="info-section" data-section="info-misroutes">
+      <div class="info-title">❌ Common Misroutes</div>
+      <ul class="info-list misroutes">
+        <li>DM Leadership for day-to-day questions</li>
+        <li>DM TC before paperwork is submitted</li>
+        <li>DM Ops for deal strategy</li>
+        <li>DM Mentors for system access</li>
+        <li>DM TC for deal strategy or negotiation advice</li>
+        <li>DM Marketing Assistant for event requests</li>
+        <li>DM multiple people at once hoping for faster answers</li>
+      </ul>
+      <div class="info-note" style="color:var(--red);">This slows everyone down and breaks trust.</div>
+    </div>
+
+    <!-- WHAT THIS PROTECTS -->
+    <div class="info-section" data-section="info-protects">
+      <div class="info-title">✅ What This Protects</div>
+      <ul class="info-list protects">
+        <li>Faster answers</li>
+        <li>Cleaner communication</li>
+        <li>Respect for everyone's role</li>
+        <li>Less friction between agents and staff</li>
+        <li>Clear accountability</li>
+      </ul>
+      <div class="info-note" style="color:var(--gold);">This routing model is not optional. It is how SRE operates.</div>
+    </div>
+
+    <div class="no-results" id="noResults" style="display:none;">
+      No scenarios match your search.<br>When in doubt, <strong>DM Ops</strong>.
+    </div>
+  </div>
+</div>
+
+<script>
+  function toggleStep(id) {
+    const body = document.getElementById(id + '-body');
+    const chevron = document.getElementById(id + '-chevron');
+    const isOpen = body.classList.contains('show');
+    // Close all steps first
+    document.querySelectorAll('.step-body').forEach(b => b.classList.remove('show'));
+    document.querySelectorAll('.step-chevron').forEach(c => c.classList.remove('open'));
+    // Toggle clicked step
+    if (!isOpen) {
+      body.classList.add('show');
+      chevron.classList.add('open');
+    }
+  }
+
+  function toggleUrgency() {
+    const d = document.getElementById('urgencyDetails');
+    const e = document.getElementById('urgencyExpand');
+    d.classList.toggle('show');
+    e.textContent = d.classList.contains('show') ? 'Tap to collapse ↑' : 'Tap for details ↓';
+  }
+
+  function showTable() {
+    document.getElementById('mainView').classList.add('hide');
+    document.getElementById('tableView').classList.add('show');
+    window.scrollTo(0, 0);
+  }
+
+  function hideTable() {
+    document.getElementById('mainView').classList.remove('hide');
+    document.getElementById('tableView').classList.remove('show');
+    document.getElementById('searchInput').value = '';
+    filterTable();
+    window.scrollTo(0, 0);
+  }
+
+  function filterTable() {
+    const q = document.getElementById('searchInput').value.toLowerCase().trim();
+    const sections = document.querySelectorAll('.table-section');
+    const infoSections = document.querySelectorAll('.info-section');
+    const noResults = document.getElementById('noResults');
+    let anyVisible = false;
+
+    sections.forEach(s => {
+      let sectionVisible = false;
+      s.querySelectorAll('.table-row').forEach(r => {
+        const text = (r.dataset.search + ' ' + r.textContent).toLowerCase();
+        const match = !q || text.includes(q);
+        r.style.display = match ? '' : 'none';
+        if (match) { sectionVisible = true; anyVisible = true; }
+      });
+      const header = s.querySelector('.table-section-header');
+      if (header) header.style.display = sectionVisible ? '' : 'none';
+    });
+
+    // Hide info sections when searching
+    infoSections.forEach(s => {
+      s.style.display = q ? 'none' : '';
+      if (!q) anyVisible = true;
+    });
+
+    noResults.style.display = anyVisible ? 'none' : '';
+  }
+</script>
+
+</body>
+</html>
